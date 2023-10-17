@@ -136,7 +136,7 @@ pdf("./adiv.geo_loc.its.pdf")
 plot_richness(its.dat, measures=c("Observed", "Shannon"), x="Geog_loc") + 
     theme_minimal() + 
     geom_jitter(alpha=0.25) +
-    geom_pwc(label = "{p.format}{p.signif}", hide.ns =TRUE, p.adjust.method = "fdr") +
+    geom_pwc(label = "{p.adj.format}{p.adj.signif}", hide.ns =TRUE, p.adjust.method = "fdr") +
     geom_point() +
     stat_summary(
     geom = "point",
@@ -152,7 +152,7 @@ pdf("./adiv.tooth_health.its.pdf")
 plot_richness(its.dat, measures=c("Observed", "Shannon"), x="Tooth_Classification") + 
     theme_minimal() + 
     geom_jitter(alpha=0.25) +
-    geom_pwc(label = "{p.format}{p.signif}", hide.ns =TRUE, p.adjust.method = "fdr") +
+    geom_pwc(label = "{p.adj.format}{p.adj.signif}", hide.ns =TRUE, p.adjust.method = "fdr") +
     geom_point() +
     stat_summary(
     geom = "point",
@@ -173,7 +173,7 @@ pdf("./adivrare.geo_loc.its.pdf")
 plot_richness(its.rare, measures=c("Observed", "Shannon"), x="Geog_loc") + 
     theme_minimal() + 
     geom_jitter(alpha=0.25) +
-    geom_pwc(label = "{p.format}{p.signif}", hide.ns =TRUE, p.adjust.method = "fdr") +
+    geom_pwc(label = "{p.adj.format}{p.adj.signif}", hide.ns =TRUE, p.adjust.method = "fdr") +
     geom_point() +
     stat_summary(
     geom = "point",
@@ -189,7 +189,7 @@ pdf("./adivrare.tooth_health.its.pdf")
 plot_richness(its.rare, measures=c("Observed", "Shannon"), x="Tooth_Classification") + 
     theme_minimal() + 
     geom_jitter(alpha=0.25) +
-    geom_pwc(label = "{p.format}{p.signif}", hide.ns =TRUE, p.adjust.method = "fdr") +
+    geom_pwc(label = "{p.adj.format}{p.adj.signif}", hide.ns =TRUE, p.adjust.method = "fdr") +
     geom_point() +
     stat_summary(
     geom = "point",
@@ -255,7 +255,7 @@ plot_ordination(rpoc.dat.clr, ordcap, "samples", color="Tooth_Classification", s
 dev.off()
 
 metadata <- as(sample_data(rpoc.dat.clr), "data.frame")
-adonis2(ordcap ~ Tooth_Classification + Geog_loc, by = metadata)
+adonis2(clr.dist ~ Tooth_Classification * Geog_loc, data=metadata)
 #seperate health into two plots: American and Nigeria
 #usa
 hlth_loco <- subset_samples(rpoc.dat.clr, Geog_loc == "USA")
@@ -282,7 +282,7 @@ metadata <- as(sample_data(rpoc.dat.clr), "data.frame")
 # calculate aitchison distance (from CLR transformed data)
 clr.dist <- dist(otu_table(rpoc.dat.clr), method="euclidean")
 #geo locations
-dispr <- vegan::betadisper(clr.dist, phyloseq::sample_data(its.dat.clr)$Geog_loc)
+dispr <- vegan::betadisper(clr.dist, phyloseq::sample_data(rpoc.dat.clr)$Geog_loc)
 print("Beta disperson HIV status")
 dispr
 permutest(dispr)
@@ -290,7 +290,7 @@ pdf("./bdisp.geo_loc.rpoc.pdf")
     boxplot(dispr)
 dev.off()
 #tooth health
-dispr <- vegan::betadisper(clr.dist, phyloseq::sample_data(its.dat.clr)$Tooth_Classification)
+dispr <- vegan::betadisper(clr.dist, phyloseq::sample_data(rpoc.dat.clr)$Tooth_Classification)
 print("Beta disperson HIV status")
 dispr
 permutest(dispr)
@@ -309,7 +309,7 @@ pdf("./adiv.geo_loc.rpoc.pdf")
 plot_richness(rpoc.dat, measures=c("Observed", "Shannon"), x="Geog_loc") + 
     theme_minimal() + 
     geom_jitter(alpha=0.25) +
-    geom_pwc(label = "{p.format}{p.signif}", hide.ns =TRUE, p.adjust.method = "fdr") +
+    geom_pwc(label = "{p.adj.format}{p.adj.signif}", hide.ns =TRUE, p.adjust.method = "fdr") +
     geom_point() +
     stat_summary(
     geom = "point",
@@ -325,7 +325,7 @@ pdf("./adiv.tooth_health.rpoc.pdf")
 plot_richness(rpoc.dat, measures=c("Observed", "Shannon"), x="Tooth_Classification") + 
     theme_minimal() + 
     geom_jitter(alpha=0.25) +
-    geom_pwc(label = "{p.format}{p.signif}", hide.ns =TRUE, p.adjust.method = "fdr") +
+    geom_pwc(label = "{p.adj.format}{p.adj.signif}", hide.ns =TRUE, p.adjust.method = "fdr") +
     geom_point() +
     stat_summary(
     geom = "point",
