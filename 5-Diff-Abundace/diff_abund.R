@@ -9,6 +9,7 @@ load("~/usa_nigeria/phyloseq_obj/ps.RData")
 its.dat.sp <- its.dat %>%
                 tax_glom("V8") %>% subset_samples(Tooth_Classification == "H-CF") 
 its.dat.sp 
+its.dat.sub <- its.dat %>% subset_samples(Tooth_Classification == "H-CF") 
 
 #choose a model
 corncob <- bbdml(formula = ASV1 ~ 1,
@@ -25,7 +26,7 @@ lrtest(mod_null = corncob, mod = corncob_da) #got a p-value of less than 0.05 ->
 da_analysis_its <- differentialTest(formula = ~ Geog_loc,
                                phi.formula = ~ Geog_loc,
                                formula_null = ~ 1,
-                               phi.formula_null = ~ 1,
+                               phi.formula_null = ~ Geog_loc,
                                test = "Wald",
                                boot = FALSE,
                                data = its.dat.sp,
