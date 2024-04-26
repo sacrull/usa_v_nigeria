@@ -16,7 +16,7 @@ setwd("/home/suzanne/usa_nigeria/networks/probio")
 load("/home/suzanne/usa_nigeria/networks/probio/cross_net.RData")
 
 #vertix colors
-vcol <- adjustcolor(c("gray25", "gray60")[1+(V(net.usa)$domain=="Bacteria")], alpha=.6)
+vcol <- adjustcolor(c("gray25", "#F4E6BF")[1+(V(net.usa)$domain=="Bacteria")], alpha=.6)
 #vertix size
 vs <- rep(3, vcount(net.usa))
 
@@ -47,12 +47,12 @@ dev.off()
 
 
 
-
+#cluster network
 wc <- cluster_leading_eigen(net.usa, weights =NA)
 df <- as.data.frame(membership(wc))
 df$names <- rownames(df)
 #get clusters that have species of interest
-import_clusts <- df %>%left_join(genus, by=c('names'='ASV')) %>% filter( V8 == "Debaryomyces_prosopidis" | V8 == "Streptococcus_sanguinis"| V8 == "Streptococcus_oralis" | V8 == "Streptococcus_parasanguinis" | V8 =="Leptotrichia_sp._oral_taxon_212" | V8 =="Leptotrichia_sp._oral_taxon_215" | V8 == "Corynebacterium_durum" )
+import_clusts <- df %>%left_join(genus, by=c('names'='ASV')) %>% filter( V8 == "Debaryomyces_prosopidis" | V8 == "Streptococcus_sanguinis"| V8 == "Streptococcus_oralis" | V8 =="Leptotrichia_sp._oral_taxon_212" | V8 =="Leptotrichia_sp._oral_taxon_215" | V8 == "Corynebacterium_durum" | V8 == "Lautropia_mirabilis" | V8 == "Haemophilus_parainfluenzae" | V8 == "Haemophilus_influenzae")
 import_clusts2 <- unique(as.vector(import_clusts$x))
 important_clusters <- function(i) {
 	filter(df, x ==i)
@@ -70,38 +70,40 @@ my_fun <- function(i) {
 usa_cluster <- sapply(cluster_interest, my_fun)
 #subset graph with clusters
 cluster.usa <- induced_subgraph(net.usa, usa_cluster)
+#recluster network
 wc <- cluster_leading_eigen(cluster.usa, weights =NA)
 df <- as.data.frame(membership(wc))
 df$names <- rownames(df)
-df %>%left_join(genus, by=c('names'='ASV')) %>% filter( V8 == "Debaryomyces_prosopidis" | V8 == "Streptococcus_sanguinis"| V8 == "Streptococcus_oralis" | V8 == "Streptococcus_parasanguinis" | V8 =="Leptotrichia_sp._oral_taxon_212" | V8 =="Leptotrichia_sp._oral_taxon_215" | V8 == "Corynebacterium_durum" | V8 == "Candida_albicans" | V8 == "Streptococcus_mutans")
-
-
+df %>%left_join(genus, by=c('names'='ASV')) %>% filter( V8 == "Debaryomyces_prosopidis" | V8 == "Rhodotorula_mucilaginosa" | V8 == "Streptococcus_sanguinis"| V8 == "Streptococcus_oralis" | V8 == "Streptococcus_parasanguinis" | V8 =="Leptotrichia_sp._oral_taxon_212" | V8 =="Leptotrichia_sp._oral_taxon_215" | V8 == "Corynebacterium_durum" | V8 == "Lautropia_mirabilis" | V8 == "Haemophilus_parainfluenzae" | V8 == "Haemophilus_influenzae" | V8 == "Candida_albicans" | V8 == "Streptococcus_mutans")
 df %>%  filter(x ==7) %>%left_join(genus, by=c('names'='ASV'))
 #cluster color
 length(wc)
-colors <- c(adjustcolor("#406E80", alpha =.5), "#BEBEBE00", adjustcolor("#DD7753", alpha =.5), "#BEBEBE00", "#BEBEBE00","#BEBEBE00", adjustcolor("#3359C2", alpha =.5), "#BEBEBE00", adjustcolor("#68B160", alpha =.5))
-border <- c("#406E80", "gray60", "#DD7753", "gray60", "gray60","gray60", "#3359C2", "gray", "#68B160")
+colors <- c("#BEBEBE00", adjustcolor("#DD77F5", alpha =.5), adjustcolor("#DD7753", alpha =.5), adjustcolor("#3359C2", alpha =.5), "#BEBEBE00", adjustcolor("#68B160", alpha =.5), "#BEBEBE00", adjustcolor("#78BEFC", alpha =.5))
+border <- c("#BEBEBE00", "#DD77F5", "#DD7753", "#3359C2", "#BEBEBE00", "#68B160", "#BEBEBE00", "#78BEFC")
 #vertix colors
-# vcol <- adjustcolor(c("gray25", "gray60")[1+(V(cluster.usa)$domain=="Bacteria")], alpha=.6)
+# vcol <- adjustcolor(c("gray25", "#F4E6BF")[1+(V(cluster.usa)$domain=="Bacteria")], alpha=.6)
 v <- membership(wc)
-vcol = ifelse(v == 1, "#406E80" , ifelse( v== 3, "#DD7753", ifelse(v == 7, "#3359C2", ifelse( v==9, "#68B160", "gray60"))))
+vcol = ifelse(v == 2, "#DD77F5" , ifelse( v== 3, "#DD7753", ifelse(v == 4, "#3359C2", ifelse( v==6, "#68B160", ifelse( v ==8, "#78BEFC", "#F4E6BF")))))
 names(vcol) <- NULL
 #vertix size
-import_taxa2 <- c("Streptococcus_sanguinis", "Streptococcus_oralis", "Leptotrichia_sp._oral_taxon_212", "Corynebacterium_durum", "Leptotrichia_sp._oral_taxon_215", "Streptococcus_parasanguinis")
+import_taxa2 <- c("Streptococcus_sanguinis", "Streptococcus_oralis", "Leptotrichia_sp._oral_taxon_212", "Corynebacterium_durum", "Leptotrichia_sp._oral_taxon_215", "Lautropia_mirabilis", "Haemophilus_influenzae","Haemophilus_parainfluenzae")
 vs <- rep(3, vcount(cluster.usa))
 for(i in import_taxa2) {
 vs[V(cluster.usa)$genus==i] <- 7
 }
 #vertix shape
 vss <- c("square", "circle")[1+(V(cluster.usa)$domain=="Bacteria")]
-
-pdf("test.pdf", width =100, height =100)
-plot(cluster.usa , mark.groups = wc , mark.shape = 1/2,mark.col =colors, mark.border = border, vertex.color = vcol,
- vertex.label=V(cluster.usa)$genus, vertex.size=vs, vertex.shape =vss)
+#make network
+modularity(wc)
+pdf("usa_probionet.pdf", width =50, height =50)
+plot(cluster.usa, layout= layout_with_gem, mark.groups = wc , mark.shape = 1/2,mark.col =colors, mark.border = border, 
+	vertex.color = vcol,vertex.label=V(cluster.usa)$genus, vertex.size=vs, vertex.shape =vss)
 dev.off()
 
-
-
+pdf("test.pdf")
+plot(cluster.usa,layout= layout_with_graphopt,mark.groups = wc, vertex.color = vcol,
+ vertex.label=V(cluster.usa)$genus, vertex.size=vs, vertex.shape =vss)
+dev.off()
 
 
 
@@ -115,7 +117,7 @@ wc <- cluster_leading_eigen(net.nigeria, weights =NA)
 df <- as.data.frame(membership(wc))
 df$names <- rownames(df)
 #get clusters that have species of interest
-import_clusts <- left_join(df, genus, by=c('names'='ASV')) %>% filter( V8 == "Debaryomyces_prosopidis" | V8 == "Streptococcus_sanguinis"| V8 == "Streptococcus_oralis" | V8 == "Streptococcus_parasanguinis" | V8 =="Leptotrichia_sp._oral_taxon_212" | V8 =="Leptotrichia_sp._oral_taxon_215" )
+import_clusts <- df %>%left_join(genus, by=c('names'='ASV')) %>% filter( V8 == "Streptococcus_sanguinis"| V8 == "Streptococcus_oralis" | V8 =="Leptotrichia_sp._oral_taxon_212" | V8 =="Leptotrichia_sp._oral_taxon_215" | V8 == "Corynebacterium_durum" | V8 == "Lautropia_mirabilis" | V8 == "Haemophilus_parainfluenzae" | V8 == "Haemophilus_influenzae")
 import_clusts2 <- unique(as.vector(import_clusts$x))
 important_clusters <- function(i) {
 	filter(df, x ==i)
@@ -130,24 +132,35 @@ cluster_interest <- as.vector(df2$names)
 my_fun <- function(i) {
  as.numeric(V(net.nigeria)[i])
 }
-usa_cluster <- sapply(cluster_interest, my_fun)
+nigiera_cluster <- sapply(cluster_interest, my_fun)
 #subset graph with clusters
-cluster.nigeria <- induced_subgraph(net.nigeria, usa_cluster)
+cluster.nigeria <- induced_subgraph(net.nigeria, nigiera_cluster)
 wc <- cluster_leading_eigen(cluster.nigeria, weights =NA)
 df <- as.data.frame(membership(wc))
 df$names <- rownames(df)
-df %>%left_join(genus, by=c('names'='ASV')) %>% filter( V8 == "Debaryomyces_prosopidis" | V8 == "Streptococcus_sanguinis"| V8 == "Streptococcus_oralis" | V8 == "Streptococcus_parasanguinis" | V8 =="Leptotrichia_sp._oral_taxon_212" | V8 =="Leptotrichia_sp._oral_taxon_215" | V8 == "Corynebacterium_durum" | V8 == "Candida_albicans" | V8 == "Streptococcus_mutans")
+df %>%left_join(genus, by=c('names'='ASV')) %>% filter( V8 == "Debaryomyces_prosopidis" | V8 == "Streptococcus_sanguinis"| V8 == "Streptococcus_oralis" | V8 == "Streptococcus_parasanguinis" | V8 =="Leptotrichia_sp._oral_taxon_212" | V8 =="Leptotrichia_sp._oral_taxon_215" | V8 == "Corynebacterium_durum" | V8 == "Candida_albicans" | V8 == "Streptococcus_mutans"| V8 == "Lautropia_mirabilis" | V8 == "Haemophilus_parainfluenzae" | V8 == "Haemophilus_influenzae")
 
 df %>%  filter(x ==1) %>%left_join(genus, by=c('names'='ASV'))
 
-
+#cluster color
 length(wc)
-colors <- c(adjustcolor("purple", alpha =.3), "#BEBEBE00", "#BEBEBE00", "#BEBEBE00", "#BEBEBE00","#BEBEBE00", "#BEBEBE00", "#BEBEBE00", "#BEBEBE00", "#BEBEBE00", "#BEBEBE00", "#BEBEBE00", "#BEBEBE00")
-adjustcolor(colors, alpha =.3)
-
-vcol <- adjustcolor(c("gray25", "gray60")[1+(V(cluster.nigeria)$domain=="Bacteria")], alpha=.6)
-
-pdf("test.pdf", width =100, height =100)
-plot(cluster.nigeria , mark.groups = wc , mark.shape = 1,mark.col =colors,
-  vertex.color=vcol, vertex.label=V(cluster.nigeria)$genus, vertex.size=3)
+colors <- c("#BEBEBE00", adjustcolor( "#DD77F5", alpha =.5),  adjustcolor("#68B160", alpha =.5), adjustcolor("#3359C2", alpha =.5), "#BEBEBE00", "#BEBEBE00", "#BEBEBE00", adjustcolor("#DD7753", alpha =.5))
+border <- c("#BEBEBE00","#DD77F5", "#68B160", "#3359C2", "#BEBEBE00", "#BEBEBE00", "#BEBEBE00", "#DD7753")
+#vertix colors
+# vcol <- adjustcolor(c("gray25", "#F4E6BF")[1+(V(cluster.usa)$domain=="Bacteria")], alpha=.6)
+v <- membership(wc)
+vcol = ifelse(v == 2, "#DD77F5" , ifelse( v== 3, "#68B160", ifelse( v== 4, "#3359C2", ifelse( v== 8, "#DD7753", "#F4E6BF"))))
+names(vcol) <- NULL
+#vertix size
+import_taxa2 <- c("Streptococcus_sanguinis", "Streptococcus_oralis", "Leptotrichia_sp._oral_taxon_212", "Corynebacterium_durum", "Leptotrichia_sp._oral_taxon_215", "Streptococcus_parasanguinis")
+vs <- rep(3, vcount(cluster.nigeria))
+for(i in import_taxa2) {
+vs[V(cluster.nigeria)$genus==i] <- 7
+}
+#vertix shape
+vss <- c("square", "circle")[1+(V(cluster.nigeria)$domain=="Bacteria")]
+modularity(wc)
+pdf("nigeria_probionet.pdf", width =50, height =50)
+plot(cluster.nigeria, layout=layout_with_graphopt, mark.groups = wc , mark.shape = 1/2,mark.col =colors, mark.border = border, 
+	vertex.color = vcol,vertex.label=V(cluster.nigeria)$genus, vertex.size=vs, vertex.shape =vss)
 dev.off()
